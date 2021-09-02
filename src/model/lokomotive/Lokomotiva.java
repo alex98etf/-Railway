@@ -44,4 +44,8 @@ public abstract class Lokomotiva {
 
     public String getVrstaPogona() { return vrstaPogona;}
 
+    public String toString(){
+        return "Oznaka: " + oznaka + " Vrsta Pogona: " + vrstaPogona + " Snaga: " + snaga;
+    }
+
 }

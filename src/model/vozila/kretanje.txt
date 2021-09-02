@@ -1,0 +1,86 @@
+try{
+                    if(Zeljeznica.map[i][j] == this) {
+                        if (i - 1 >= 0 && j - 1 >= 0) {
+
+                        // IDE DOLE
+                        if (Zeljeznica.background[i][j - 1] == null && Zeljeznica.background[i + 1][j] instanceof Putevi) {
+                            String vrsta_D = ((Putevi) Zeljeznica.background[i + 1][j]).getVrsta();
+
+                            if(Zeljeznica.map[i+1][j] == null){
+                                Zeljeznica.map[i + 1][j] = this;
+                                Zeljeznica.map[i][j] = null;
+                                System.out.println("DOLE" + "(" + i + "," + j + ")");
+                                sleep(Zeljeznica.brzinePuteva[1]);
+                                if (i + 1 == Zeljeznica.MAP_SIZE - 1) {
+                                    Zeljeznica.map[i + 1][j] = null;
+                                    this.join();
+                                }
+                            }
+                        }
+
+                            // IDE GORE
+                            else if ((Zeljeznica.background[i][j + 1] == null || Zeljeznica.background[i][j + 1] instanceof Putevi)) {
+                                String vrsta_R = ((Putevi) Zeljeznica.background[i][j + 1]).getVrsta();
+                                String vrsta_U = ((Putevi) Zeljeznica.background[i - 1][j]).getVrsta();
+
+                                if(Zeljeznica.background[i][j + 1] == null || Putevi.PRUGA.equals(vrsta_R))
+                                    if (Zeljeznica.map[i-1][j] == null) {
+                                        Zeljeznica.map[i - 1][j] = this;
+                                        Zeljeznica.map[i][j] = null;
+                                        System.out.println("GORE" + "(" + i + "," + j + ")");
+                                        sleep(Zeljeznica.brzinePuteva[1]);
+                                        if (i == 0) {
+                                            Zeljeznica.map[i][j] = null;
+                                            this.join();
+                                        }
+                                        i -= 2;
+                                    }
+                            }
+                            // IDE Desno
+                            if (Zeljeznica.background[i + 1][j] == null || Zeljeznica.background[i + 1][j+1] == null || Zeljeznica.background[i+1][j] instanceof Putevi) {
+                                String vrsta_U = ((Putevi) Zeljeznica.background[i+1][j]).getVrsta();
+                                String vrsta_R = ((Putevi) Zeljeznica.background[i][j+1]).getVrsta();
+                                System.out.println("Desno" + (Zeljeznica.background[i + 1][j+1] == null || Putevi.PRUGA.equals(vrsta_U)));
+                                if ((Zeljeznica.background[i + 1][j] == null && Putevi.PRUGA.equals(vrsta_U)) && Zeljeznica.map[i][j + 1] == null) {
+                                    Zeljeznica.map[i][j + 1] = this;
+                                    Zeljeznica.map[i][j] = null;
+                                    System.out.println("Desno (" + i + ";" + j + ")");
+                                    if(j+1 == Zeljeznica.MAP_SIZE-1){
+                                        Zeljeznica.map[i][j+1] = null;
+                                        this.join();
+                                    }
+                                }
+                                else if (Zeljeznica.background[i + 1][j+1] == null && Putevi.KOLOVOZ.equals(vrsta_R) && Zeljeznica.map[i][j + 1] == null) {
+                                    Zeljeznica.map[i][j + 1] = this;
+                                    Zeljeznica.map[i][j] = null;
+                                    System.out.println("Desno (" + i + ";" + j + ")");
+                                    if(j+1 == Zeljeznica.MAP_SIZE-1){
+                                        Zeljeznica.map[i][j+1] = null;
+                                        this.join();
+                                    }
+                                }
+                            }
+
+                            // IDe Lijevo
+                            if (Zeljeznica.background[i + 1][j] == null || Zeljeznica.background[i + 1][j] instanceof Putevi) {
+                                String vrsta_D = ((Putevi) Zeljeznica.background[i + 1][j]).getVrsta();
+                                if (Putevi.PRUGA.equals(vrsta_D) && Zeljeznica.map[i][j - 1] == null) {
+                                    Zeljeznica.map[i][j - 1] = this;
+                                    Zeljeznica.map[i][j] = null;
+                                    System.out.println("Lijevo (" + i + ";" + j + ")");
+                                    sleep(100);
+                                    if(j-1 == 0){
+                                        Zeljeznica.map[i][j-1] = null;
+                                        this.join();
+                                    }
+
+                                    j-=2;
+
+                                }
+
+                            }
+                        }
+                    }
+                } catch (Exception exception){
+                    LOGGER.warning(exception.fillInStackTrace().toString());
+                }

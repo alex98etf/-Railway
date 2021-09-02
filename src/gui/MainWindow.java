@@ -2,11 +2,13 @@ package gui;
 
 import main.Zeljeznica;
 import model.put.Putevi;
+import model.vozila.Auto;
 import model.vozila.Vozilo;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.*;
 import java.util.logging.Logger;
@@ -27,6 +29,7 @@ public class MainWindow extends JFrame{
     private JPanel mainPanel;
     private final JMenuItem about = new JMenuItem("About");
     private static final String mapFile = "src/map.txt";
+    private final static String[] colName = new String[30];
 
     public MainWindow(){
         super("ŽELJEZNICA");
@@ -66,23 +69,22 @@ public class MainWindow extends JFrame{
         new KretanjeWindow();
     }
 
-    private void endSimulation() {
-        Zeljeznica.start = false;
-    }
+    private void endSimulation() { Zeljeznica.runSimulacija(false); }
 
-    private void pauzirajSimulation() {
-        Zeljeznica.setPauza();
-    }
+    private void pauzirajSimulation() { Zeljeznica.setPauza(true);}
 
     private void runSimulation() {
-        Zeljeznica.start = true;
+        Zeljeznica.runSimulacija(true);
     }
 
+    public DefaultTableModel getModel(){ return (DefaultTableModel) matrix.getModel();}
+    public JPanel getMatrixPanel() {return matrixPanel;}
+
     static class ColorRenderer extends DefaultTableCellRenderer {
-        private String line;
+//        private String line;
 
         public ColorRenderer() {
-            try {
+           /* try {
                 FileInputStream stream = new FileInputStream(mapFile);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
@@ -93,7 +95,7 @@ public class MainWindow extends JFrame{
 
             } catch (Exception exception) {
                 LOGGER.warning(exception.fillInStackTrace().toString());
-            }
+            }*/
         }
 
         @Override
@@ -133,6 +135,11 @@ public class MainWindow extends JFrame{
             if(Zeljeznica.background[row][column] == null)
                 setBackground(table.getBackground());
 
+             if(Zeljeznica.map[row][column]!= null)
+                 if (Zeljeznica.map[row][column] instanceof Auto)
+                     setBackground(Color.GREEN);
+                 else
+                     setBackground(Color.cyan);
                 return this;
         }
     }

@@ -42,7 +42,7 @@ public class Putevi {
     }
     @Override
     public String toString(){
-        return "PUT " + vrsta;
+        return vrsta;
     }
 
 }

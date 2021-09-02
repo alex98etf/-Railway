@@ -9,8 +9,8 @@ public class Auto extends Vozilo {
 
     private static final Logger LOGGER = Logger.getLogger(Auto.class.getName());
 
-    public Auto() {
-		super();
+    public Auto(int brzina) {
+		super(brzina);
     }
 
     protected int brojVrata;

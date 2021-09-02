@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 public class Kamion extends Vozilo {
 
     private static final Logger LOGGER = Logger.getLogger(Kamion.class.getName());
-    public Kamion() {
-        super();
+    public Kamion(int brzina) {
+        super(brzina);
     }
 
     protected int maxNosivost;
