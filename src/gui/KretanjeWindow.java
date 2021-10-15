@@ -23,6 +23,8 @@ public class KretanjeWindow extends JFrame{
         this.setContentPane(backPanel);
         this.setLocationRelativeTo(null);
         this.setSize(750,450);
+        ImageIcon icona = new ImageIcon("src/gui/icon/noun_Train_743171_ss.png");
+        this.setIconImage(icona.getImage());
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
 

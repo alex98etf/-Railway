@@ -7,6 +7,7 @@ public class Putevi {
     public static final String KOLOVOZ = "kolovoz";
     public static final String PRELAZ = "prelaz";
     public static final String STANICA = "statica";
+    public static final String CEKAONICA = "cekaonica";
 
     private String vrsta;
 
@@ -19,6 +20,8 @@ public class Putevi {
             this.vrsta = STANICA;
         else if(vrsta == 'p')
             this.vrsta = PRELAZ;
+        else if(vrsta == 'c')
+            this.vrsta = CEKAONICA;
         else
             this.vrsta = null;
     }
@@ -31,6 +34,8 @@ public class Putevi {
             this.vrsta = STANICA;
         else if(PRELAZ.equals(vrsta))
             this.vrsta = PRELAZ;
+        else if(CEKAONICA.equals(vrsta))
+            this.vrsta = CEKAONICA;
         else
             this.vrsta = null;
     }

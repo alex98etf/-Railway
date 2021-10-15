@@ -1,18 +1,16 @@
 package model.vozila;
 
 import main.Zeljeznica;
-import model.kompozicija.Kompozicija;
 import model.lokomotive.Lokomotiva;
 import model.put.Putevi;
 import model.vagoni.Vagon;
-
 import java.util.Random;
 import java.util.logging.Logger;
 
 /**
  * @author Alex
  */
-public class Vozilo extends Thread{
+public abstract class Vozilo extends Thread{
 
     private static final Logger LOGGER = Logger.getLogger(Vozilo.class.getName());
 
@@ -24,20 +22,28 @@ public class Vozilo extends Thread{
     protected boolean stigao = false;
     protected char smjer;
     protected int brzina;
-    private static final Random rand = new Random();
+    protected static final Random rand = new Random();
 
 
     public Vozilo(int brzina) {
-        this.ID = 111111 + rand.nextInt(50);
-        this.model = "TEST";
-        this.marka = "MARKA ZVAKA";
-        this.godiste = 2003;
+        this.ID = 111111 + rand.nextInt(888888);
+        this.model = "JDK-13.0.2";
+        this.marka = "JAVA";
+        this.godiste = 2020;
         this.brzina = brzina;
-
+        setDaemon(true);
     }
 
     public void setPauza(boolean pauza) {
         this.pauza = pauza;
+        if(!pauza)
+            try {
+                synchronized (this){
+                    notify();
+                }
+            } catch (Exception exception){
+                LOGGER.warning(exception.fillInStackTrace().toString());
+            }
     }
 
     public void setModel(String model) {
@@ -82,9 +88,13 @@ public class Vozilo extends Thread{
 
     public boolean isStigao() { return stigao; }
 
-
-
-
+    public void kill(){
+        try {
+            this.join();
+        } catch (Exception exception){
+            LOGGER.warning(exception.fillInStackTrace().toString());
+        }
+    }
 
     @Override
     public String toString() {
@@ -92,9 +102,8 @@ public class Vozilo extends Thread{
     }
 
     public void run(){
-        System.out.println("to " + ID);
-        for (int i = 0; i < Zeljeznica.MAP_SIZE-1; i++) {
-            for (int j = 0; j < Zeljeznica.MAP_SIZE-1; j++) {
+        for (int i = 0; i < Zeljeznica.MAP_SIZE; i++) {
+            for (int j = 0; j < Zeljeznica.MAP_SIZE; j++) {
                 if(pauza){
                     synchronized (this) {
                         try {
@@ -105,104 +114,111 @@ public class Vozilo extends Thread{
                     }
                 }
                 try {
-                    if (Zeljeznica.map[i][j] == this || Zeljeznica.map[29][j] == this) {
+                    if (Zeljeznica.map[i][j] == this) {
+
+                        // IDe prema dole
                         if (smjer == 'd') {
                             if (Zeljeznica.map[i + 1][j] == null && Zeljeznica.background[i + 1][j] instanceof Putevi) {
                                 String vrsta = ((Putevi) Zeljeznica.background[i + 1][j]).getVrsta();
 
-                                if(Putevi.PRELAZ.equals(vrsta)){
+                                if(j>0 && Putevi.PRELAZ.equals(vrsta)){
                                     if(Zeljeznica.map[i+1][j-1] instanceof Lokomotiva || Zeljeznica.map[i+1][j+1] instanceof Lokomotiva) {
                                         i--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                     if(Zeljeznica.map[i+1][j-1] instanceof Vagon || Zeljeznica.map[i+1][j+1] instanceof Vagon) {
                                         i--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                 }
 
-                                System.out.println("DOLE" + "(" + i + "," + j + ")");
+//                                System.out.println("DOLE" + "(" + i + "," + j + ")");
                                 Zeljeznica.map[i+1][j] = this;
                                 Zeljeznica.map[i][j] = null;
                                 sleep(brzina);
                             }
+                            // Zastoj
                             else if(Zeljeznica.map[i + 1][j] != null){
                                 i--;
-                                System.out.println(i +" zastoj " +j +" "+ ID);
                                 sleep(brzina);
                                 continue;
                             }
+                            // Uklanjanje sa mape
                             if (i+1 >= Zeljeznica.MAP_SIZE - 1) {
                                 stigao = true;
                                 Zeljeznica.map[i+1][j] = null;
-                                System.out.println("stigao " + ID);
                             }
                         }
                         // IDE PREMA GORE
                         else if(smjer == 'u'){
-                            if(Zeljeznica.map[i-1][j] == null && Zeljeznica.background[i-1][j] instanceof Putevi){
+                            if(i>0 && j>0 && Zeljeznica.map[i-1][j] == null && Zeljeznica.background[i-1][j] instanceof Putevi){
                                 String vrsta = ((Putevi) Zeljeznica.background[i-1][j]).getVrsta();
 
                                 if(Putevi.PRELAZ.equals(vrsta)){
                                     if(Zeljeznica.map[i-1][j-1] instanceof Lokomotiva || Zeljeznica.map[i+1][j+1] instanceof Lokomotiva) {
                                         i--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                     if(Zeljeznica.map[i-1][j-1] instanceof Vagon || Zeljeznica.map[i+1][j+1] instanceof Vagon) {
                                         i--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                 }
-                                System.out.println("GORE" + "(" + i + "," + j + ")");
+//                                System.out.println("GORE" + "(" + i + "," + j + ")");
                                 Zeljeznica.map[i-1][j] = this;
                                 Zeljeznica.map[i][j] = null;
                                 sleep(brzina);
+                                // Ukalanjanje sa mape
                                 if(i-1 <= 0) {
                                     Zeljeznica.map[i - 1][j] = null;
                                     stigao = true;
                                 }
-                                i-=2;
+                                else
+                                    i-=2; // ponistavanje ++ i vracanje u prethodni red
                             }
-                            else if(Zeljeznica.map[i-1][j] != null){
+                            // Zastoj
+                            else if(i>0 && Zeljeznica.map[i-1][j] != null){
                                 i--;
-                                System.out.println("zastoj");
                                 sleep(brzina);
                                 continue;
                             }
                             // GORE pa Lijevo
-                            if(i>0 && Zeljeznica.background[i][j] == null && Zeljeznica.background[i+1][j-1] instanceof Putevi){
+                            if(j>0 && Zeljeznica.background[i][j] == null && Zeljeznica.background[i+1][j-1] instanceof Putevi){
                                 String vrsta = ((Putevi) Zeljeznica.background[i+1][j-1]).getVrsta();
                                 if(Putevi.KOLOVOZ.equals(vrsta))
                                 smjer = 'l';
                             }
                             // GORE pa Desno
-                            if(Zeljeznica.background[i+1][j+1] instanceof Putevi && Zeljeznica.background[i+1][j] instanceof Putevi){
-                                String vrsta = ((Putevi) Zeljeznica.background[i][j+1]).getVrsta();
-                                if(Putevi.KOLOVOZ.equals(vrsta))
-                                    smjer = 'r';
+                            else if(i+1 <=Zeljeznica.MAP_SIZE && Zeljeznica.background[i+1][j+1] instanceof Putevi && Zeljeznica.background[i+1][j] instanceof Putevi){
+                               if(Zeljeznica.background[i][j + 1] != null) {
+                                   String vrsta = ((Putevi)Zeljeznica.background[i][j + 1]).getVrsta();
+                                   if (Putevi.KOLOVOZ.equals(vrsta))
+                                       smjer = 'r';
+                               }
                             }
-                            /*if(i <= 0){
-                                stigao = true;
-                                Zeljeznica.map[i+2][j] = null;
-                            }*/
-
                         }
+                        // Ide lijevo
                         else if(smjer == 'l'){
-                            System.out.println("lijevo");
-                            if(Zeljeznica.map[i][j-1] == null && Zeljeznica.background[i][j-1] instanceof Putevi){
+                            if(j>0 && Zeljeznica.map[i][j-1] == null && Zeljeznica.background[i][j-1] instanceof Putevi){
                                 String vrsta = ((Putevi) Zeljeznica.background[i][j-1]).getVrsta();
                                 if(Putevi.PRELAZ.equals(vrsta)){
                                     if(Zeljeznica.map[i+1][j-1] instanceof Lokomotiva || Zeljeznica.map[i+1][j+1] instanceof Lokomotiva) {
                                         j--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                     if(Zeljeznica.map[i+1][j-1] instanceof Vagon || Zeljeznica.background[i][j-1] instanceof Vagon) {
                                         j--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                 }
 
-                                System.out.println("Lijevo (" + i + ";" + j + ")");
+//                                System.out.println("Lijevo (" + i + ";" + j + ")");
                                 Zeljeznica.map[i][j-1] = this;
                                 Zeljeznica.map[i][j] = null;
                                 sleep(brzina);
@@ -210,49 +226,49 @@ public class Vozilo extends Thread{
                                     Zeljeznica.map[i][j-1] = null;
                                     stigao = true;
                                 }
-
-                                j-=2;
+                                else
+                                    j-=2;// Ponistavanje ++ i vracanje u prethodnu kolonu
                             }
-                            else if(Zeljeznica.map[i][j-1] != null){
+                            // Zastoj
+                            else if(j>0 && Zeljeznica.map[i][j-1] != null){
                                 j--;
-                                System.out.println(i+" zastoj " +j +" "+ID);
                                 sleep(brzina);
                                 continue;
                             }
-                            if(j>0 && Zeljeznica.background[i][j] == null && Zeljeznica.background[i+1][j+1] instanceof Putevi){
+                            // Lijevo pa dole
+                            if(j>0&&Zeljeznica.background[i][j] == null && Zeljeznica.background[i+1][j+1] instanceof Putevi){
                                 String vrsta = ((Putevi) Zeljeznica.background[i+1][j+1]).getVrsta();
                                 if(Putevi.KOLOVOZ.equals(vrsta))
                                     smjer = 'd';
                             }
-                            /*if(j <= 0){
-                                stigao = true;
-                                Zeljeznica.map[i][j+2] = null;
-                            }*/
-
                         }
+
+                        // IDe Desno
                         else if(smjer == 'r'){
                             if(Zeljeznica.map[i][j+1] == null && Zeljeznica.background[i][j+1] instanceof Putevi){
-                                String vrsta = ((Putevi) Zeljeznica.background[i][j+1]).getVrsta();
 
-                                if(Putevi.PRELAZ.equals(vrsta)){
+                                String vrsta = ((Putevi) Zeljeznica.background[i][j+1]).getVrsta();
+                                if(i>0 && Putevi.PRELAZ.equals(vrsta)){
                                     if(Zeljeznica.map[i-1][j+1] instanceof Lokomotiva || Zeljeznica.map[i+1][j+1] instanceof Lokomotiva) {
-                                        j--;
+                                        if(j>0)
+                                            j--;
+                                        sleep(brzina);
                                         continue;
+
                                     }
-                                    if(Zeljeznica.map[i-1][j+1] instanceof Vagon || Zeljeznica.map[i+1][j+1] instanceof Vagon) {
-                                        j--;
+                                    else if(Zeljeznica.map[i-1][j+1] instanceof Vagon || Zeljeznica.map[i+1][j+1] instanceof Vagon) {
+                                        if(j>0)
+                                            j--;
+                                        sleep(brzina);
                                         continue;
                                     }
                                 }
-
-                                System.out.println("Desno (" + i + ";" + j + ")");
                                 Zeljeznica.map[i][j+1] = this;
                                 Zeljeznica.map[i][j] = null;
                                 sleep(brzina);
                             }
-                            else if(Zeljeznica.map[i][j+1] == null){
+                            else if(Zeljeznica.map[i][j+1] != null){
                                 j--;
-                                System.out.println("zasroj");
                                 sleep(brzina);
                                 continue;
                             }

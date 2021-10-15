@@ -8,9 +8,7 @@ import java.util.logging.Logger;
 public class Univerzalna extends Lokomotiva {
 
     private static final Logger LOGGER = Logger.getLogger(Univerzalna.class.getName());
-    public Univerzalna(int snaga, int vrstaPogona) {
-        super(snaga, vrstaPogona);
+    public Univerzalna(String vrstaPogona) {
+        super(vrstaPogona);
     }
-
-
 }

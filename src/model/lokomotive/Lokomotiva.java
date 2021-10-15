@@ -16,17 +16,20 @@ public abstract class Lokomotiva {
     protected int oznaka;
     protected int snaga;
     protected String vrstaPogona;
+    protected char smijer;
+    protected int positionX;
+    protected int positionY;
 
-    public Lokomotiva(int snaga, int vrsta) {
+    public Lokomotiva(String vrstaPogona) {
         this.oznaka = rand.nextInt((999999 - 111111)) + 111111;
-        this.snaga = snaga;
+        this.snaga = 50;
 
-        switch (vrsta){
-            case 0:
+        switch (vrstaPogona){
+            case "p":
                 this.vrstaPogona = PARNA;
-            case 1:
+            case "d":
                 this.vrstaPogona = DIZEL;
-            case 2:
+            case "e":
                 this.vrstaPogona = ELEKTRICNA;
         }
 
@@ -43,6 +46,31 @@ public abstract class Lokomotiva {
     public int getSnaga() { return snaga;}
 
     public String getVrstaPogona() { return vrstaPogona;}
+
+    public char getSmijer() { return smijer; }
+
+    public void setSmijer(char smijer) { this.smijer = smijer; }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
+    public void setPosition(int x, int y){
+        positionX = x;
+        positionY = y;
+    }
 
     public String toString(){
         return "Oznaka: " + oznaka + " Vrsta Pogona: " + vrstaPogona + " Snaga: " + snaga;

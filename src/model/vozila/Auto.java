@@ -8,12 +8,13 @@ import java.util.logging.Logger;
 public class Auto extends Vozilo {
 
     private static final Logger LOGGER = Logger.getLogger(Auto.class.getName());
+    protected int brojVrata;
+
 
     public Auto(int brzina) {
 		super(brzina);
+		brojVrata = rand.nextInt((5 - 3)-1) + 3;
     }
-
-    protected int brojVrata;
 
     public int getBrojVrata() {
         return brojVrata;

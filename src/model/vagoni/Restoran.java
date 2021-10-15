@@ -11,11 +11,11 @@ public class Restoran extends Vagon {
     protected String opis;
 
     public Restoran(String opis) {
-        super();
+        super(18,26);
         this.opis = opis;
     }
 
 
-    public String getOpis() { return opis;}
+    public String getOpis() { return "Služeno : "+opis;}
 
 }

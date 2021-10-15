@@ -8,10 +8,9 @@ import java.util.logging.Logger;
 public class Teretna extends Lokomotiva {
 
     private static final Logger LOGGER = Logger.getLogger(Teretna.class.getName());
-    public Teretna(int snaga, int vrstaPogona) {
+    public Teretna(String vrstaPogona) {
 
-        super(snaga, vrstaPogona);
+        super(vrstaPogona);
     }
-
 
 }
